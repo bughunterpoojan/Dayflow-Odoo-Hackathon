@@ -62,11 +62,11 @@
                     <div class="form-group">
                         <label for="employment_type" class="form-label">Employment Type</label>
                         <select name="employment_type" id="employment_type" class="form-select">
-                            <option value="Full-time" {% if profile.employment_type=='Full-time' %}selected{% endif %}>
+                            <option value="Full-time" {% if profile.employment_type == 'Full-time' %}selected{% endif %}>
                                 Full-time</option>
-                            <option value="Part-time" {% if profile.employment_type=='Part-time' %}selected{% endif %}>
+                            <option value="Part-time" {% if profile.employment_type == 'Part-time' %}selected{% endif %}>
                                 Part-time</option>
-                            <option value="Contract" {% if profile.employment_type=='Contract' %}selected{% endif %}>
+                            <option value="Contract" {% if profile.employment_type == 'Contract' %}selected{% endif %}>
                                 Contract</option>
                         </select>
                     </div>

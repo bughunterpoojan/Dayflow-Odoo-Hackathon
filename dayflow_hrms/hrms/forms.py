@@ -7,12 +7,10 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, EmployeeProfile, LeaveRequest, Attendance, Payroll
 
 
-class SignUpForm(UserCreationForm):
+class AddUserForm(UserCreationForm):
     """
-    User registration form with employee_id, email, role selection.
+    Admin form to add new users. Employee ID is auto-generated.
     """
-    employee_id = forms.CharField(max_length=20, required=True, 
-                                  widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Employee ID'}))
     email = forms.EmailField(required=True, 
                             widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email'}))
     first_name = forms.CharField(max_length=30, required=True,
@@ -24,7 +22,7 @@ class SignUpForm(UserCreationForm):
     
     class Meta:
         model = CustomUser
-        fields = ['employee_id', 'email', 'first_name', 'last_name', 'username', 'password1', 'password2', 'role']
+        fields = ['email', 'first_name', 'last_name', 'username', 'password1', 'password2', 'role']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Username'}),
         }

@@ -12,22 +12,39 @@ from django.db.models import Q, Count
 from datetime import datetime, timedelta, date
 
 from .models import CustomUser, EmployeeProfile, Attendance, LeaveRequest, Payroll
-from .forms import SignUpForm, LoginForm, EmployeeProfileForm, LeaveRequestForm, AttendanceForm, SalaryStructureForm
+from .forms import AddUserForm, LoginForm, EmployeeProfileForm, LeaveRequestForm, AttendanceForm, SalaryStructureForm
 from .decorators import admin_required, employee_required
 
 
 # ==================== Authentication Views ====================
 
-def signup_view(request):
-    """User registration view"""
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    
+@login_required
+@admin_required
+def add_user_view(request):
+    """Admin add user view with auto-generated ID"""
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = AddUserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.email_verified = False  # In production, send verification email
+            role = form.cleaned_data['role']
+            
+            # Generate Employee ID
+            prefix = 'HR' if role == 'ADMIN' else 'E'
+            
+            # Find last ID with this prefix
+            last_user = CustomUser.objects.filter(employee_id__startswith=prefix).order_by('-employee_id').first()
+            
+            if last_user:
+                try:
+                    last_number = int(last_user.employee_id[len(prefix):])
+                    new_number = last_number + 1
+                except ValueError:
+                    new_number = 1
+            else:
+                new_number = 1
+                
+            user.employee_id = f"{prefix}{str(new_number).zfill(5)}"
+            user.email_verified = True # Admin created users are verified
             user.save()
             
             # Create EmployeeProfile for the user
@@ -37,14 +54,14 @@ def signup_view(request):
                 position='Not Assigned'
             )
             
-            messages.success(request, 'Account created successfully! Please log in.')
-            return redirect('login')
+            messages.success(request, f'User created! Please complete their profile details.')
+            return redirect('edit_employee', employee_id=user.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = SignUpForm()
+        form = AddUserForm()
     
-    return render(request, 'auth/signup.html', {'form': form})
+    return render(request, 'admin/add_user.html', {'form': form})
 
 
 def login_view(request):
@@ -344,8 +361,8 @@ def admin_dashboard_view(request):
 @login_required
 @admin_required
 def employee_list_view(request):
-    """Admin view all employees"""
-    employees = CustomUser.objects.filter(role='EMPLOYEE').select_related('profile')
+    """Admin view all employees and admins"""
+    employees = CustomUser.objects.all().select_related('profile').order_by('-date_joined')
     
     context = {
         'employees': employees,

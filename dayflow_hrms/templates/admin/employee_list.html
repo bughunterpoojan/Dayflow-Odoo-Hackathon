@@ -9,7 +9,10 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">All Employees</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="card-title">All Employees</h3>
+                <a href="{% url 'add_user' %}" class="btn btn-primary">➕ Add User</a>
+            </div>
         </div>
         <div class="card-body">
             {% if employees %}
@@ -18,6 +21,7 @@
                     <tr>
                         <th>Employee ID</th>
                         <th>Name</th>
+                        <th>Role</th>
                         <th>Email</th>
                         <th>Department</th>
                         <th>Position</th>
@@ -30,6 +34,11 @@
                     <tr>
                         <td><strong>{{ employee.employee_id }}</strong></td>
                         <td>{{ employee.get_full_name }}</td>
+                        <td>
+                            <span class="badge badge-{% if employee.role == 'ADMIN' %}success{% else %}info{% endif %}">
+                                {{ employee.get_role_display }}
+                            </span>
+                        </td>
                         <td>{{ employee.email }}</td>
                         <td>{{ employee.profile.department }}</td>
                         <td>{{ employee.profile.position }}</td>
