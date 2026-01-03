@@ -50,16 +50,14 @@
                     <div class="flex gap-2 mt-2">
                         <form method="POST" action="{% url 'check_in' %}" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-success" {% if today_attendance and
-                                today_attendance.check_in_time %}disabled{% endif %}>
+                            <button type="submit" class="btn btn-success" {% if today_attendance and today_attendance.check_in_time %}disabled{% endif %}>
                                 ✅ Check In
                             </button>
                         </form>
 
                         <form method="POST" action="{% url 'check_out' %}" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger" {% if not today_attendance or not
-                                today_attendance.check_in_time or today_attendance.check_out_time %}disabled{% endif %}>
+                            <button type="submit" class="btn btn-danger" {% if not today_attendance or not today_attendance.check_in_time or today_attendance.check_out_time %}disabled{% endif %}>
                                 ⏹️ Check Out
                             </button>
                         </form>
