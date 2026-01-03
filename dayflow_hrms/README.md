@@ -120,17 +120,6 @@ dayflow_hrms/
 - Apply migrations: `python manage.py migrate`
 - Create superuser: `python manage.py createsuperuser`
 
-## What I changed recently (UX improvements)
-- Centralized styles and replaced inline styles in templates for consistency
-- Added an HTML email template and `hrms/email_utils.py` helper to send styled emails
-
-## Next suggestions
-- Convert Django auth system emails (password reset) to the styled HTML template
-- Add a small preview view to render email templates during QA
-- Add automated tests around key views and email rendering
-
-## License & support
-This repository is intended for learning and internal use. For questions, contact your system administrator.
 
 ---
 
