@@ -16,234 +16,122 @@ A comprehensive Human Resource Management System built with Django, HTML, and CS
 
 ### Employee Features
 - 👤 **Profile Management** - View and edit personal information
-- 📅 **Attendance Tracking** - Check-in/Check-out functionality with daily and weekly views
-- 🏖️ **Leave Management** - Apply for leave (Paid, Sick, Unpaid) and track status
-- 💰 **Payroll Access** - View salary details (read-only)
+# Dayflow HRMS — Human Resource Management System
 
-### Admin/HR Features
-- 👥 **Employee Management** - View, add, and edit employee details
-- 📊 **Attendance Monitoring** - View attendance for all employees with filtering
-- ✅ **Leave Approvals** - Review and approve/reject leave requests
-- 💵 **Payroll Management** - Update salary structures and generate payroll
-- 📈 **Dashboard Analytics** - Quick stats and overview
+![Django](https://img.shields.io/badge/Django-4.2-green.svg) ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 
-## 🚀 Installation & Setup
+Every workday, perfectly aligned. ✨
 
-### Prerequisites
-- Python 3.8 or higher
-- pip (Python package manager)
+Lightweight, practical HRMS built on Django with features for employee profiles, attendance, leave management, and payroll visibility.
 
-### Step 1: Install Dependencies
+## Quick overview
+- Authentication with OTP support
+- Employee and Admin/HR role separation
+- Attendance (check-in/check-out), leave application & approvals
+- Payroll visibility and basic salary structure management
 
-First, install pip if you don't have it:
+## Prerequisites
+- Python 3.8+
+- pip
+
+## Setup (local development)
+1. Clone or open this project folder.
+2. Create & activate a virtual environment (recommended):
+
 ```bash
-sudo apt update
-sudo apt install python3-pip -y
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-Then install the required packages:
+3. Install dependencies:
+
 ```bash
-cd /home/poojan/coding/gcet*odoo/dayflow_hrms
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-### Step 2: Database Setup
+4. Apply database migrations:
 
-Create the database tables:
 ```bash
-python3 manage.py makemigrations
-python3 manage.py migrate
+python manage.py migrate
 ```
 
-### Step 3: Create an Admin User
+5. (Optional) Create a superuser:
 
-Create a superuser for the Django admin panel:
 ```bash
-python3 manage.py createsuperuser
+python manage.py createsuperuser
 ```
 
-### Step 4: Create Sample Data (Optional)
+6. Run the development server:
 
-You can use the Django shell to create sample employees:
 ```bash
-python3 manage.py shell
+python manage.py runserver
 ```
 
-Then run:
+Open http://127.0.0.1:8000/ in your browser.
+
+## Quick test data (optional)
+Use the Django shell to create a simple admin and employee for quick testing:
+
+```bash
+python manage.py shell
+```
+
+Then paste:
+
 ```python
 from hrms.models import CustomUser, EmployeeProfile
 
-# Create an admin user
 admin = CustomUser.objects.create_user(
-    username='admin1',
-    employee_id='EMP001',
-    email='admin@dayflow.com',
-    password='admin123',
-    role='ADMIN',
-    first_name='John',
-    last_name='Admin',
-    email_verified=True
+    username='admin1', employee_id='HR00001', email='admin@dayflow.com', password='admin123', role='ADMIN', first_name='Admin'
 )
+EmployeeProfile.objects.create(user=admin, department='HR', position='Manager')
 
-# Create admin profile
-EmployeeProfile.objects.create(
-    user=admin,
-    department='Administration',
-    position='HR Manager',
-    salary_structure={'base_salary': 80000, 'allowances': 10000, 'deductions': 5000}
-)
-
-# Create an employee user
 employee = CustomUser.objects.create_user(
-    username='employee1',
-    employee_id='EMP002',
-    email='employee@dayflow.com',
-    password='employee123',
-    role='EMPLOYEE',
-    first_name='Jane',
-    last_name='Doe',
-    email_verified=True
+    username='employee1', employee_id='E00001', email='employee@dayflow.com', password='employee123', role='EMPLOYEE', first_name='Jane'
 )
-
-# Create employee profile
-EmployeeProfile.objects.create(
-    user=employee,
-    department='Engineering',
-    position='Software Developer',
-    salary_structure={'base_salary': 60000, 'allowances': 8000, 'deductions': 3000}
-)
-
-exit()
+EmployeeProfile.objects.create(user=employee, department='Engineering', position='Developer')
 ```
 
-### Step 5: Run the Development Server
+## Email testing (dev)
+To see sent HTML emails in console, add this to your `settings.py` (development only):
 
-```bash
-python3 manage.py runserver
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ```
 
-The application will be available at: **http://127.0.0.1:8000/**
+Trigger an action that sends email (login to receive OTP, assign a task, create a project) and check the server console for the styled HTML message.
 
-## 🎨 Design Features
-
-- **Modern UI** - Clean, professional design with vibrant gradients
-- **Glassmorphism Effects** - Beautiful card designs with backdrop blur
-- **Dark Mode Support** - Toggle between light and dark themes
-- **Smooth Animations** - Micro-animations for better user experience
-- **Responsive Design** - Works on all screen sizes
-- **Premium Typography** - Using Inter font from Google Fonts
-
-## 📱 Usage
-
-### For Employees
-
-1. **Sign Up** - Register with your employee ID and email
-2. **Login** - Access your dashboard
-3. **Check In/Out** - Mark your attendance daily
-4. **Apply for Leave** - Submit leave requests
-5. **View Profile** - Check your job details and salary
-6. **View Attendance** - Track your attendance history
-7. **View Payroll** - See your salary details
-
-### For Admin/HR
-
-1. **Login** - Access the admin dashboard
-2. **Manage Employees** - Add, edit, view employee details
-3. **Track Attendance** - Monitor attendance for all employees
-4. **Approve Leaves** - Review and approve/reject leave requests
-5. **Manage Payroll** - Update salary structures and generate payroll
-6. **View Analytics** - Quick overview of HR metrics
-
-## 📂 Project Structure
+## Project structure (important files)
 
 ```
 dayflow_hrms/
-├── dayflow_hrms/          # Project settings
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── hrms/                  # Main application
-│   ├── models.py         # Database models
-│   ├── views.py          # View functions
-│   ├── forms.py          # Django forms
-│   ├── urls.py           # URL routing
-│   ├── decorators.py     # Access control
-│   └── admin.py          # Admin interface
-├── templates/            # HTML templates
-│   ├── base.html
-│   ├── auth/            # Login, signup
-│   ├── employee/        # Employee dashboard & features
-│   └── admin/           # Admin dashboard & features
-├── static/              # Static files
-│   └── css/
-│       └── styles.css   # Modern CSS styles
-├── media/               # User uploads
-├── manage.py
-└── requirements.txt
+├─ dayflow_hrms/        # Project settings & URLs
+├─ hrms/                # Main app: models, views, forms, templates
+├─ templates/           # Django templates (base, auth, admin, employee)
+├─ static/              # Static assets (css, images, js)
+├─ media/               # Uploaded files
+├─ manage.py
+└─ requirements.txt
 ```
 
-## 🔐 Default Test Credentials
+## Common commands
+- Run server: `python manage.py runserver`
+- Make migrations: `python manage.py makemigrations`
+- Apply migrations: `python manage.py migrate`
+- Create superuser: `python manage.py createsuperuser`
 
-If you created sample data in Step 4:
+## What I changed recently (UX improvements)
+- Centralized styles and replaced inline styles in templates for consistency
+- Added an HTML email template and `hrms/email_utils.py` helper to send styled emails
 
-**Admin/HR User:**
-- Email: `admin@dayflow.com`
-- Password: `admin123`
+## Next suggestions
+- Convert Django auth system emails (password reset) to the styled HTML template
+- Add a small preview view to render email templates during QA
+- Add automated tests around key views and email rendering
 
-**Employee User:**
-- Email: `employee@dayflow.com`
-- Password: `employee123`
-
-## 🛠️ Technology Stack
-
-- **Backend**: Django 4.2
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Database**: SQLite (development)
-- **Styling**: Custom CSS with modern design patterns
-
-## 📋 Requirements Covered
-
-✅ Authentication & Authorization (Sign Up/Sign In)  
-✅ Role-based access (Employee vs Admin/HR)  
-✅ Employee Dashboard with quick-access cards  
-✅ Admin Dashboard with statistics  
-✅ Employee Profile Management  
-✅ Attendance tracking (Check-in/Check-out)  
-✅ Daily and weekly attendance views  
-✅ Leave management (Apply, Approve/Reject)  
-✅ Leave types (Paid, Sick, Unpaid)  
-✅ Payroll/Salary Management  
-✅ Admin payroll controls  
-
-## 🎯 Future Enhancements
-
-- 📧 Email & notification alerts
-- 📊 Analytics & reports dashboard
-- 📄 PDF salary slips and attendance reports
-- 📱 Mobile app integration
-- 🔔 Real-time notifications
-
-## 👨‍💻 Development
-
-To contribute or modify:
-
-1. Make changes to the code
-2. Run migrations if models changed:
-   ```bash
-   python3 manage.py makemigrations
-   python3 manage.py migrate
-   ```
-3. Test your changes
-4. Restart the development server
-
-## 📝 License
-
-This project is created for educational purposes.
-
-## 🤝 Support
-
-For issues or questions, please contact your system administrator.
+## License & support
+This repository is intended for learning and internal use. For questions, contact your system administrator.
 
 ---
 
-**Dayflow HRMS** - Making HR management effortless! 🌊
+© Dayflow HRMS
