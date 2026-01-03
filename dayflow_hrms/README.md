@@ -75,7 +75,7 @@ Use the Django shell to create a simple admin and employee for quick testing:
 ```bash
 python manage.py shell
 ```
-
+use your emails for verification as we use gmail otp
 Then paste:
 
 ```python
