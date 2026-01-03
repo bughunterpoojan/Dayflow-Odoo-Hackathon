@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Core email-safe styles (kept simple for broad client support) */
+    body { font-family: Arial, Helvetica, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 20px; }
+    .email-wrapper { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e6eef8; }
+    .email-header { padding: 20px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; text-align: center; }
+    .email-body { padding: 20px; color: #0f172a; }
+    .email-footer { padding: 12px 20px; font-size: 13px; color: #6b7280; text-align: center; }
+    .btn { display: inline-block; padding: 10px 16px; border-radius: 6px; color: #fff; background: #6366f1; text-decoration: none; font-weight: 600; }
+    .muted { color: #6b7280; font-size: 13px; }
+    /* Small helpers */
+    .lead { font-size: 16px; margin-bottom: 12px; }
+    pre { white-space: pre-wrap; font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="email-header">
+      <div style="font-size:20px;font-weight:800;">🌊 Dayflow HRMS</div>
+    </div>
+
+    <div class="email-body">
+      <h2 style="margin-top:0;">{{ title }}</h2>
+      <div class="lead">{{ content|linebreaksbr }}</div>
+      {% if cta_url and cta_text %}
+      <p style="margin-top:16px;"><a href="{{ cta_url }}" class="btn">{{ cta_text }}</a></p>
+      {% endif %}
+
+      <hr style="border:none;border-top:1px solid #eef2ff;margin:18px 0;">
+      <p class="muted">If you didn't expect this email, please ignore it.</p>
+    </div>
+
+    <div class="email-footer">
+      &copy; {{ year|default:2026 }} Dayflow HRMS — Every workday, perfectly aligned.
+    </div>
+  </div>
+</body>
+</html>

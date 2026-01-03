@@ -74,12 +74,11 @@
                         <td>
                             {% if leave.status == 'PENDING' %}
                             <div class="flex gap-1">
-                                <form method="POST" action="{% url 'approve_leave' leave.id %}"
-                                    style="display: inline;">
+                                <form method="POST" action="{% url 'approve_leave' leave.id %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm btn-success">✅ Approve</button>
                                 </form>
-                                <form method="POST" action="{% url 'reject_leave' leave.id %}" style="display: inline;">
+                                <form method="POST" action="{% url 'reject_leave' leave.id %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm btn-danger">❌ Reject</button>
                                 </form>

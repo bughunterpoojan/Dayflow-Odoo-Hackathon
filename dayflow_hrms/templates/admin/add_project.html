@@ -54,7 +54,7 @@
 
                 <div class="form-group">
                     <label for="members" class="form-label">Team Members</label>
-                    <select name="members" id="members" class="form-select" multiple style="height: 150px;">
+                    <select name="members" id="members" class="form-select select-large" multiple>
                         {% for emp in employees %}
                         <option value="{{ emp.id }}">{{ emp.get_full_name }} ({{ emp.employee_id }})</option>
                         {% endfor %}

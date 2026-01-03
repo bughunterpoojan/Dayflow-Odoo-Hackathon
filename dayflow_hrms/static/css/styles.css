@@ -738,3 +738,61 @@ a:hover {
     color: white;
     transform: rotate(180deg);
 }
+
+/* Small helper classes to replace inline styles in templates */
+.nav-user {
+    font-weight: 600;
+}
+
+.card-narrow {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.avatar-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-size: 2.5rem;
+}
+.text-muted-sm {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Utility display helpers */
+.d-inline {
+    display: inline;
+}
+
+.d-inline-block {
+    display: inline-block;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.card-wide {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.select-large {
+    height: 150px;
+}

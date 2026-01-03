@@ -12,6 +12,7 @@ from django.db.models import Q, Count
 from datetime import datetime, timedelta, date
 
 from django.core.mail import send_mail
+from .email_utils import send_styled_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 
@@ -93,7 +94,7 @@ def login_view(request):
                     message = f'Your OTP for logging into Dayflow HRMS is: {otp}\n\nThis code will expire in 10 minutes.'
                     
                     try:
-                        send_mail(subject, message, None, [authenticated_user.email])
+                        send_styled_mail(subject, message, [authenticated_user.email])
                         messages.info(request, 'An OTP has been sent to your email. Please enter it below.')
                         return redirect('otp_verify')
                     except Exception as e:
@@ -214,7 +215,7 @@ def add_task_view(request):
             subject = f'New Task Assigned: {task.title}'
             message = f'Hi {task.assigned_to.first_name},\n\nA new task has been assigned to you:\n\nTitle: {task.title}\nStart Date: {task.start_date}\nEnd Date: {task.end_date}\n\nDescription:\n{task.description}\n\nPlease review and accept the task in your dashboard.'
             try:
-                send_mail(subject, message, None, [task.assigned_to.email])
+                send_styled_mail(subject, message, [task.assigned_to.email])
             except Exception:
                 pass
 
@@ -776,7 +777,7 @@ def add_project_view(request):
                 
                 # Send email notification
                 try:
-                    send_mail(subject, message, None, [member.email])
+                    send_styled_mail(subject, message, [member.email])
                 except Exception:
                     pass
             
@@ -829,7 +830,7 @@ def complete_project_view(request, project_id):
             subject = f'Project Completed: {project.name}'
             message = f'Hi {member.first_name},\n\nThe project "{project.name}" has been marked as COMPLETED by {request.user.get_full_name()}.\n\nBest regards,\nDayflow HRMS'
             try:
-                send_mail(subject, message, None, [member.email])
+                send_styled_mail(subject, message, [member.email])
             except Exception:
                 pass
         

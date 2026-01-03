@@ -131,7 +131,7 @@ EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '9f341e001@smtp-brevo.com'
-EMAIL_HOST_PASSWORD = 'xsmtpsib-d79f2f8af8cad6347a6d871ecb03b9e8702b3f2311ea23c1411f50af564de8db-dDf34zWwT97MfZNO'
+EMAIL_HOST_PASSWORD = 'replace it from readme'
 DEFAULT_FROM_EMAIL = 'kamanipoojan@gmail.com'
 
 # Login/Logout URLs

@@ -7,7 +7,7 @@
     <h1>Edit Profile</h1>
     <p class="text-secondary mb-4">Update your personal information</p>
 
-    <div class="card" style="max-width: 600px;">
+    <div class="card card-narrow">
         <div class="card-body">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -15,7 +15,7 @@
                 <div class="form-group">
                     <label for="profile_picture" class="form-label">Profile Picture</label>
                     <input type="file" name="profile_picture" id="profile_picture" class="form-input" accept="image/*">
-                    <p class="text-secondary mt-1" style="font-size: 0.875rem;">Upload a new profile picture (optional)
+                    <p class="text-secondary mt-1 text-muted-sm">Upload a new profile picture (optional)
                     </p>
                 </div>
 

@@ -48,14 +48,14 @@
                 <div>
                     <h4>Attendance</h4>
                     <div class="flex gap-2 mt-2">
-                        <form method="POST" action="{% url 'check_in' %}" style="display: inline;">
+                        <form method="POST" action="{% url 'check_in' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success" {% if today_attendance and today_attendance.check_in_time %}disabled{% endif %}>
                                 ✅ Check In
                             </button>
                         </form>
 
-                        <form method="POST" action="{% url 'check_out' %}" style="display: inline;">
+                        <form method="POST" action="{% url 'check_out' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger" {% if not today_attendance or not today_attendance.check_in_time or today_attendance.check_out_time %}disabled{% endif %}>
                                 ⏹️ Check Out
@@ -162,7 +162,7 @@
                     </td>
                     <td>
                         {% if task.status != 'ACCEPTED' and task.status != 'REJECTED' %}
-                        <form method="post" action="{% url 'accept_task' task.id %}" style="display:inline">
+                        <form method="post" action="{% url 'accept_task' task.id %}" class="d-inline">
                             {% csrf_token %}
                             <button name="action" value="accept" class="btn btn-sm btn-primary">Accept</button>
                             <button name="action" value="reject" class="btn btn-sm btn-danger">Reject</button>

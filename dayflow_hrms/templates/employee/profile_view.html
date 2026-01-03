@@ -18,12 +18,9 @@
             <div class="card-body">
                 <div class="text-center mb-3">
                     {% if user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture"
-                        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 0 auto;">
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="avatar-large">
                     {% else %}
-                    <div
-                        style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-                                    display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; margin: 0 auto;">
+                    <div class="avatar-large avatar-placeholder">
                         {{ user.first_name.0 }}{{ user.last_name.0 }}
                     </div>
                     {% endif %}
