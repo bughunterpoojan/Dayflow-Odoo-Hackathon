@@ -8,10 +8,13 @@ from . import views
 urlpatterns = [
     # Authentication
     path('', views.login_view, name='login'),
-    path('admin/add-user/', views.add_user_view, name='add_user'),
     path('login/', views.login_view, name='login'),
+    path('login/otp/', views.otp_verify_view, name='otp_verify'),
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    
+    # Admin User Management
+    path('admin/add-user/', views.add_user_view, name='add_user'),
     
     # Employee Dashboard
     path('employee/dashboard/', views.employee_dashboard_view, name='employee_dashboard'),

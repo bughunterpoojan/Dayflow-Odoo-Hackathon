@@ -11,6 +11,10 @@ from django.utils import timezone
 from django.db.models import Q, Count
 from datetime import datetime, timedelta, date
 
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+
 from .models import CustomUser, EmployeeProfile, Attendance, LeaveRequest, Payroll
 from .forms import AddUserForm, LoginForm, EmployeeProfileForm, LeaveRequestForm, AttendanceForm, SalaryStructureForm
 from .decorators import admin_required, employee_required
@@ -65,7 +69,7 @@ def add_user_view(request):
 
 
 def login_view(request):
-    """User login view"""
+    """User login view - Phase 1: Validate credentials and send OTP"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -75,15 +79,25 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            # Authenticate using email
             try:
                 user = CustomUser.objects.get(email=email)
-                user = authenticate(request, username=user.username, password=password)
+                authenticated_user = authenticate(request, username=user.username, password=password)
                 
-                if user is not None:
-                    login(request, user)
-                    messages.success(request, f'Welcome back, {user.get_full_name()}!')
-                    return redirect('dashboard')
+                if authenticated_user is not None:
+                    # Generate OTP and store user ID in session
+                    otp = authenticated_user.generate_otp()
+                    request.session['otp_user_id'] = authenticated_user.id
+                    
+                    # Send OTP via email
+                    subject = 'Your Dayflow HRMS Login OTP'
+                    message = f'Your OTP for logging into Dayflow HRMS is: {otp}\n\nThis code will expire in 10 minutes.'
+                    
+                    try:
+                        send_mail(subject, message, None, [authenticated_user.email])
+                        messages.info(request, 'An OTP has been sent to your email. Please enter it below.')
+                        return redirect('otp_verify')
+                    except Exception as e:
+                        messages.error(request, f'Error sending OTP email: {str(e)}')
                 else:
                     messages.error(request, 'Invalid email or password.')
             except CustomUser.DoesNotExist:
@@ -92,6 +106,46 @@ def login_view(request):
         form = LoginForm()
     
     return render(request, 'auth/login.html', {'form': form})
+
+
+def otp_verify_view(request):
+    """OTP verification view - Phase 2: Validate OTP and log in"""
+    user_id = request.session.get('otp_user_id')
+    
+    if not user_id:
+        messages.error(request, 'Session expired. Please log in again.')
+        return redirect('login')
+    
+    try:
+        user = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
+        messages.error(request, 'User not found. Please log in again.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp', '')
+        
+        if user.otp and user.otp_expiry and timezone.now() <= user.otp_expiry:
+            if user.otp == entered_otp:
+                # Clear OTP and session
+                user.otp = None
+                user.otp_expiry = None
+                user.save()
+                del request.session['otp_user_id']
+                
+                # Log the user in
+                login(request, user)
+                messages.success(request, f'Welcome back, {user.get_full_name()}!')
+                return redirect('dashboard')
+            else:
+                messages.error(request, 'Invalid OTP. Please try again.')
+        else:
+            messages.error(request, 'OTP has expired. Please log in again.')
+            del request.session['otp_user_id']
+            return redirect('login')
+    
+    return render(request, 'auth/otp_verify.html', {'user_email': user.email})
+
 
 
 @login_required

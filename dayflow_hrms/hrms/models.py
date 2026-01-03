@@ -27,11 +27,23 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     
+    # OTP for login
+    otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_expiry = models.DateTimeField(blank=True, null=True)
+    
     # Override email to make it required and unique
     email = models.EmailField(unique=True)
     
     def __str__(self):
         return f"{self.employee_id} - {self.get_full_name()}"
+    
+    def generate_otp(self):
+        """Generate a 6-digit OTP and set expiry to 10 minutes from now"""
+        import random
+        self.otp = f"{random.randint(100000, 999999)}"
+        self.otp_expiry = timezone.now() + timedelta(minutes=10)
+        self.save()
+        return self.otp
     
     def is_admin(self):
         """Check if user has admin role"""

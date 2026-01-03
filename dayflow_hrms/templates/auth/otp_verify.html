@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Login to Dayflow HRMS">
-    <title>Login - Dayflow HRMS</title>
+    <meta name="description" content="Verify OTP - Dayflow HRMS">
+    <title>Verify OTP - Dayflow HRMS</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
@@ -17,8 +17,8 @@
                 🌊 Dayflow HRMS
             </div>
 
-            <h2 class="auth-title">Welcome Back</h2>
-            <p class="text-center text-secondary mb-3">Every workday, perfectly aligned.</p>
+            <h2 class="auth-title">Enter OTP</h2>
+            <p class="text-center text-secondary mb-3">A 6-digit code was sent to {{ user_email }}</p>
 
             {% if messages %}
             {% for message in messages %}
@@ -33,26 +33,19 @@
                 {% csrf_token %}
 
                 <div class="form-group">
-                    <label for="id_email" class="form-label">Email</label>
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                    <div class="form-error">{{ form.email.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="id_password" class="form-label">Password</label>
-                    {{ form.password }}
-                    {% if form.password.errors %}
-                    <div class="form-error">{{ form.password.errors }}</div>
-                    {% endif %}
+                    <label for="otp" class="form-label">One-Time Password</label>
+                    <input type="text" name="otp" id="otp" class="form-input" placeholder="123456" maxlength="6"
+                        pattern="\d{6}" required autofocus autocomplete="one-time-code">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
-                    Sign In
+                    Verify & Login
                 </button>
             </form>
 
+            <p class="text-center mt-3">
+                <a href="{% url 'login' %}">← Back to Login</a>
+            </p>
         </div>
     </div>
 </body>
