@@ -1,19 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dayflow - Human Resource Management System">
     <title>{% block title %}Dayflow HRMS{% endblock %}</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
-    {% load static %}
-    
     <div class="wrapper">
         <!-- Header -->
         {% if user.is_authenticated %}
@@ -22,22 +23,22 @@
                 <div class="logo">
                     🌊 Dayflow HRMS
                 </div>
-                
+
                 <ul class="nav-menu">
                     {% if user.is_admin %}
-                        <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a></li>
-                        <li><a href="{% url 'employee_list' %}" class="nav-link">Employees</a></li>
-                        <li><a href="{% url 'admin_attendance' %}" class="nav-link">Attendance</a></li>
-                        <li><a href="{% url 'admin_leave_list' %}" class="nav-link">Leave Requests</a></li>
-                        <li><a href="{% url 'admin_payroll_list' %}" class="nav-link">Payroll</a></li>
+                    <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a></li>
+                    <li><a href="{% url 'employee_list' %}" class="nav-link">Employees</a></li>
+                    <li><a href="{% url 'admin_attendance' %}" class="nav-link">Attendance</a></li>
+                    <li><a href="{% url 'admin_leave_list' %}" class="nav-link">Leave Requests</a></li>
+                    <li><a href="{% url 'admin_payroll_list' %}" class="nav-link">Payroll</a></li>
                     {% else %}
-                        <li><a href="{% url 'employee_dashboard' %}" class="nav-link">Dashboard</a></li>
-                        <li><a href="{% url 'view_profile' %}" class="nav-link">Profile</a></li>
-                        <li><a href="{% url 'employee_attendance' %}" class="nav-link">Attendance</a></li>
-                        <li><a href="{% url 'apply_leave' %}" class="nav-link">Apply Leave</a></li>
-                        <li><a href="{% url 'employee_payroll' %}" class="nav-link">Payroll</a></li>
+                    <li><a href="{% url 'employee_dashboard' %}" class="nav-link">Dashboard</a></li>
+                    <li><a href="{% url 'view_profile' %}" class="nav-link">Profile</a></li>
+                    <li><a href="{% url 'employee_attendance' %}" class="nav-link">Attendance</a></li>
+                    <li><a href="{% url 'apply_leave' %}" class="nav-link">Apply Leave</a></li>
+                    <li><a href="{% url 'employee_payroll' %}" class="nav-link">Payroll</a></li>
                     {% endif %}
-                    
+
                     <li>
                         <span class="nav-link" style="font-weight: 600;">
                             {{ user.get_full_name }}
@@ -50,23 +51,24 @@
             </nav>
         </header>
         {% endif %}
-        
+
         <!-- Messages -->
         {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
+            <div
+                class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
-        
+
         <!-- Main Content -->
         <main class="container mt-4 mb-4">
             {% block content %}{% endblock %}
         </main>
-        
+
         <!-- Footer -->
         <footer class="footer">
             <div class="container">
@@ -74,7 +76,7 @@
             </div>
         </footer>
     </div>
-    
+
     <!-- JavaScript -->
     <script>
         // Dark mode toggle (optional)
@@ -84,14 +86,15 @@
             html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
             localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
         }
-        
+
         // Load saved theme
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.documentElement.setAttribute('data-theme', savedTheme);
         }
     </script>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

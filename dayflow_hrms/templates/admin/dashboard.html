@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="fade-in">
-    <h1>Admin Dashboard 👨‍💼</h1>
+    <h1>Welcome, {{ user.get_full_name }}! 👋</h1>
     <p class="text-secondary mb-4">Manage your organization's HR operations</p>
 
     <!-- Quick Stats -->
@@ -36,30 +36,26 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="grid grid-3 mb-4">
-        <a href="{% url 'employee_list' %}" class="card card-glass" style="text-decoration: none;">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
-                <h3>Manage Employees</h3>
-                <p class="text-secondary">View and edit employee information</p>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-4">
+                <a href="{% url 'employee_list' %}" class="btn btn-secondary">
+                    👥 Employees
+                </a>
+                <a href="{% url 'admin_attendance' %}" class="btn btn-secondary">
+                    📅 Attendance
+                </a>
+                <a href="{% url 'admin_leave_list' %}" class="btn btn-secondary">
+                    🏖️ Leaves
+                </a>
+                <a href="{% url 'admin_payroll_list' %}" class="btn btn-secondary">
+                    💰 Payroll
+                </a>
             </div>
-        </a>
-
-        <a href="{% url 'admin_attendance' %}" class="card card-glass" style="text-decoration: none;">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
-                <h3>Attendance Records</h3>
-                <p class="text-secondary">Track employee attendance</p>
-            </div>
-        </a>
-
-        <a href="{% url 'admin_leave_list' %}" class="card card-glass" style="text-decoration: none;">
-            <div class="card-body text-center">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🏖️</div>
-                <h3>Leave Approvals</h3>
-                <p class="text-secondary">Review and approve leave requests</p>
-            </div>
-        </a>
+        </div>
     </div>
 
     <!-- Recent Leave Requests -->

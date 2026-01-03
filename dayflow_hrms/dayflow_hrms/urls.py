@@ -7,8 +7,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('hrms.urls')),
+    path('django-admin/', admin.site.urls),  # Django admin moved to avoid conflict
 ]
 
 # Serve media files in development
