@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Project - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>➕ Add New Project</h1>
+        <a href="{% url 'project_list' %}" class="btn btn-secondary">← Back to Projects</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Project Details</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="name" class="form-label">Project Name *</label>
+                    <input type="text" name="name" id="name" class="form-input" required
+                        placeholder="Enter project name">
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-textarea" rows="4"
+                        placeholder="Enter project description"></textarea>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="start_date" class="form-label">Start Date *</label>
+                        <input type="date" name="start_date" id="start_date" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_date" class="form-label">End Date *</label>
+                        <input type="date" name="end_date" id="end_date" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="leader" class="form-label">Project Leader *</label>
+                    <select name="leader" id="leader" class="form-select" required>
+                        <option value="">-- Select Leader --</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.get_full_name }} ({{ emp.employee_id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="members" class="form-label">Team Members</label>
+                    <select name="members" id="members" class="form-select" multiple style="height: 150px;">
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.get_full_name }} ({{ emp.employee_id }})</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-secondary">Hold Ctrl/Cmd to select multiple members. Leader is automatically
+                        added.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg">
+                    🚀 Create Project
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

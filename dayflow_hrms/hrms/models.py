@@ -227,3 +227,103 @@ class Payroll(models.Model):
         """Override save to auto-calculate net salary"""
         self.calculate_net_salary()
         super().save(*args, **kwargs)
+
+
+class Project(models.Model):
+    """
+    Project model for HR to assign projects to employees.
+    """
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('IN_PROGRESS', 'In Progress'),
+        ('COMPLETED', 'Completed'),
+    ]
+    
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='PENDING')
+    
+    leader = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, 
+                               related_name='led_projects')
+    members = models.ManyToManyField(CustomUser, related_name='assigned_projects')
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, 
+                                   related_name='created_projects')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Project'
+        verbose_name_plural = 'Projects'
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_status_display()})"
+    
+    def is_leader(self, user):
+        """Check if user is the project leader"""
+        return self.leader == user
+    
+    def get_duration_days(self):
+        """Get project duration in days"""
+        return (self.end_date - self.start_date).days + 1
+    
+    def is_upcoming(self):
+        """Check if project hasn't started yet"""
+        from django.utils import timezone
+        return timezone.now().date() < self.start_date
+    
+    def is_active(self):
+        """Check if project is currently in progress"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        return self.start_date <= today <= self.end_date
+
+
+class Task(models.Model):
+    """
+    Simple Task model to assign a single task to an employee.
+    """
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('ASSIGNED', 'Assigned'),
+        ('ACCEPTED', 'Accepted'),
+        ('REJECTED', 'Rejected'),
+        ('COMPLETED', 'Completed'),
+    ]
+
+    title = models.CharField(max_length=250)
+    description = models.TextField(blank=True, null=True)
+    assigned_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_tasks')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Task'
+        verbose_name_plural = 'Tasks'
+
+    def __str__(self):
+        return f"{self.title} - {self.assigned_to.get_full_name()} ({self.get_status_display()})"
+    
+    def is_upcoming(self):
+        """Check if task hasn't started yet"""
+        from django.utils import timezone
+        return timezone.now().date() < self.start_date
+    
+    def is_active(self):
+        """Check if task is currently in progress"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        return self.start_date <= today <= self.end_date
+    
+    def can_complete(self):
+        """Check if task can be marked complete (active and accepted)"""
+        return self.is_active() and self.status == 'ACCEPTED'

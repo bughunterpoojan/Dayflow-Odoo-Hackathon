@@ -80,6 +80,8 @@
                 <div>
                     <h4>Quick Links</h4>
                     <div class="flex flex-col gap-2 mt-2">
+                        <a href="{% url 'my_projects' %}" class="btn btn-primary">📂 My Projects</a>
+                        <a href="{% url 'my_tasks' %}" class="btn btn-primary">📝 My Tasks</a>
                         <a href="{% url 'view_profile' %}" class="btn btn-secondary">View Profile</a>
                         <a href="{% url 'apply_leave' %}" class="btn btn-secondary">Apply for Leave</a>
                         <a href="{% url 'employee_attendance' %}" class="btn btn-secondary">View Attendance History</a>
@@ -128,6 +130,54 @@
             <p class="text-secondary">No attendance records yet.</p>
             {% endif %}
         </div>
+    </div>
+</div>
+
+<!-- Assigned Tasks -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Assigned Tasks</h3>
+    </div>
+    <div class="card-body">
+        {% if tasks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.start_date|date:"M d, Y" }} - {{ task.end_date|date:"M d, Y" }}</td>
+                    <td>
+                        <span
+                            class="badge badge-{% if task.status == 'ACCEPTED' %}success{% elif task.status == 'REJECTED' %}error{% elif task.status == 'ASSIGNED' %}warning{% else %}secondary{% endif %}">
+                            {{ task.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if task.status != 'ACCEPTED' and task.status != 'REJECTED' %}
+                        <form method="post" action="{% url 'accept_task' task.id %}" style="display:inline">
+                            {% csrf_token %}
+                            <button name="action" value="accept" class="btn btn-sm btn-primary">Accept</button>
+                            <button name="action" value="reject" class="btn btn-sm btn-danger">Reject</button>
+                        </form>
+                        {% else %}
+                        --
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-secondary">No tasks assigned.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

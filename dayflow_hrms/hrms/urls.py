@@ -51,4 +51,17 @@ urlpatterns = [
     path('admin/payroll/', views.admin_payroll_list_view, name='admin_payroll_list'),
     path('admin/employee/<int:employee_id>/salary/', views.admin_update_salary_view, name='admin_update_salary'),
     path('admin/payroll/generate/', views.admin_generate_payroll_view, name='admin_generate_payroll'),
+    
+    # Admin Projects
+    path('admin/projects/', views.project_list_view, name='project_list'),
+    path('admin/projects/add/', views.add_project_view, name='add_project'),
+    path('admin/tasks/', views.task_list_view, name='task_list'),
+    path('admin/tasks/add/', views.add_task_view, name='add_task'),
+    
+    # Employee Projects & Tasks
+    path('employee/projects/', views.my_projects_view, name='my_projects'),
+    path('employee/tasks/', views.my_tasks_view, name='my_tasks'),
+    path('project/<int:project_id>/complete/', views.complete_project_view, name='complete_project'),
+    path('task/<int:task_id>/complete/', views.complete_task_view, name='complete_task'),
+    path('employee/task/<int:task_id>/respond/', views.accept_task_view, name='accept_task'),
 ]

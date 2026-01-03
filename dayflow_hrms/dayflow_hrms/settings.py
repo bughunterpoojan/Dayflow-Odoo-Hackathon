@@ -125,24 +125,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'hrms.CustomUser'
 
-import os
-from dotenv import load_dotenv
-
-# Load .env file
-load_dotenv()
-
-# Email Configuration
+# Email Configuration - Brevo SMTP
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp-relay.brevo.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@dayflow.com')
-
-# For development, if credentials are not provided, fallback to console
-if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = '9f341e001@smtp-brevo.com'
+EMAIL_HOST_PASSWORD = 'xsmtpsib-d79f2f8af8cad6347a6d871ecb03b9e8702b3f2311ea23c1411f50af564de8db-dDf34zWwT97MfZNO'
+DEFAULT_FROM_EMAIL = 'kamanipoojan@gmail.com'
 
 # Login/Logout URLs
 LOGIN_URL = '/login/'

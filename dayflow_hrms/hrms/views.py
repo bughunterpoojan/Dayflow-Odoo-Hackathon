@@ -15,8 +15,8 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 
-from .models import CustomUser, EmployeeProfile, Attendance, LeaveRequest, Payroll
-from .forms import AddUserForm, LoginForm, EmployeeProfileForm, LeaveRequestForm, AttendanceForm, SalaryStructureForm
+from .models import CustomUser, EmployeeProfile, Attendance, LeaveRequest, Payroll, Project, Task
+from .forms import AddUserForm, LoginForm, EmployeeProfileForm, LeaveRequestForm, AttendanceForm, SalaryStructureForm, TaskForm
 from .decorators import admin_required, employee_required
 
 
@@ -192,9 +192,66 @@ def employee_dashboard_view(request):
         'pending_leaves': pending_leaves,
         'latest_payroll': latest_payroll,
         'today_attendance': today_attendance,
+        'tasks': Task.objects.filter(assigned_to=employee).order_by('-created_at'),
     }
     
     return render(request, 'employee/dashboard.html', context)
+
+
+@login_required
+@admin_required
+def add_task_view(request):
+    """Admin quick action to add a task for a single employee."""
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.created_by = request.user
+            task.status = 'ASSIGNED'
+            task.save()
+
+            # Notify employee by email (best-effort)
+            subject = f'New Task Assigned: {task.title}'
+            message = f'Hi {task.assigned_to.first_name},\n\nA new task has been assigned to you:\n\nTitle: {task.title}\nStart Date: {task.start_date}\nEnd Date: {task.end_date}\n\nDescription:\n{task.description}\n\nPlease review and accept the task in your dashboard.'
+            try:
+                send_mail(subject, message, None, [task.assigned_to.email])
+            except Exception:
+                pass
+
+            messages.success(request, f'Task "{task.title}" assigned to {task.assigned_to.get_full_name()}')
+            return redirect('admin_dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = TaskForm()
+
+    return render(request, 'admin/add_task.html', {'form': form})
+
+
+@login_required
+@employee_required
+def accept_task_view(request, task_id):
+    """Employee accepts (or rejects) a task assigned to them."""
+    task = get_object_or_404(Task, id=task_id)
+
+    if task.assigned_to != request.user:
+        messages.error(request, 'You are not allowed to modify this task.')
+        return redirect('employee_dashboard')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'accept':
+            task.status = 'ACCEPTED'
+            task.save()
+            messages.success(request, 'Task accepted.')
+        elif action == 'reject':
+            task.status = 'REJECTED'
+            task.save()
+            messages.success(request, 'Task rejected.')
+        else:
+            messages.error(request, 'Invalid action.')
+
+    return redirect('employee_dashboard')
 
 
 @login_required
@@ -670,3 +727,159 @@ def admin_generate_payroll_view(request):
         return redirect('admin_payroll_list')
     
     return redirect('admin_payroll_list')
+
+
+# ==================== Project Views ====================
+
+@login_required
+@admin_required
+def add_project_view(request):
+    """Admin view to create a new project"""
+    employees = CustomUser.objects.filter(role='EMPLOYEE').order_by('first_name')
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description', '')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        leader_id = request.POST.get('leader')
+        member_ids = request.POST.getlist('members')
+        
+        if not name or not start_date or not end_date or not leader_id:
+            messages.error(request, 'Please fill in all required fields.')
+        else:
+            leader = get_object_or_404(CustomUser, id=leader_id)
+            
+            project = Project.objects.create(
+                name=name,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                leader=leader,
+                created_by=request.user,
+                status='PENDING'
+            )
+            
+            # Add members (including leader)
+            project.members.add(leader)
+            for member_id in member_ids:
+                project.members.add(member_id)
+            
+            # Send email notifications
+            all_members = project.members.all()
+            for member in all_members:
+                subject = f'New Project Assigned: {project.name}'
+                if member == leader:
+                    message = f'Hi {member.first_name},\n\nYou have been assigned as the LEADER of the project "{project.name}".\n\nStart Date: {project.start_date}\nEnd Date: {project.end_date}\n\nDescription:\n{project.description}\n\nBest regards,\nDayflow HRMS'
+                else:
+                    message = f'Hi {member.first_name},\n\nYou have been assigned to the project "{project.name}" led by {leader.get_full_name()}.\n\nStart Date: {project.start_date}\nEnd Date: {project.end_date}\n\nDescription:\n{project.description}\n\nBest regards,\nDayflow HRMS'
+                
+                # Send email notification
+                try:
+                    send_mail(subject, message, None, [member.email])
+                except Exception:
+                    pass
+            
+            messages.success(request, f'Project "{name}" created successfully!')
+            return redirect('project_list')
+    
+    return render(request, 'admin/add_project.html', {'employees': employees})
+
+
+@login_required
+@admin_required
+def project_list_view(request):
+    """Admin view all projects"""
+    projects = Project.objects.all().prefetch_related('members').select_related('leader')
+    
+    context = {
+        'projects': projects,
+    }
+    
+    return render(request, 'admin/project_list.html', context)
+
+
+@login_required
+def my_projects_view(request):
+    """Employee view their assigned projects"""
+    projects = request.user.assigned_projects.all().select_related('leader')
+    
+    context = {
+        'projects': projects,
+    }
+    
+    return render(request, 'employee/my_projects.html', context)
+
+
+@login_required
+def complete_project_view(request, project_id):
+    """Leader marks project as complete"""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if not project.is_leader(request.user):
+        messages.error(request, 'Only the project leader can mark this project as complete.')
+        return redirect('my_projects')
+    
+    if request.method == 'POST':
+        project.status = 'COMPLETED'
+        project.save()
+        
+        # Notify all members
+        for member in project.members.all():
+            subject = f'Project Completed: {project.name}'
+            message = f'Hi {member.first_name},\n\nThe project "{project.name}" has been marked as COMPLETED by {request.user.get_full_name()}.\n\nBest regards,\nDayflow HRMS'
+            try:
+                send_mail(subject, message, None, [member.email])
+            except Exception:
+                pass
+        
+        messages.success(request, f'Project "{project.name}" marked as complete!')
+    
+    return redirect('my_projects')
+
+# Task Management Views
+
+@login_required
+def complete_task_view(request, task_id):
+    """Employee marks task as complete"""
+    task = get_object_or_404(Task, id=task_id)
+    
+    if task.assigned_to != request.user:
+        messages.error(request, 'You are not allowed to modify this task.')
+        return redirect('my_tasks')
+    
+    if not task.can_complete():
+        messages.error(request, 'This task cannot be marked complete at this time.')
+        return redirect('my_tasks')
+    
+    if request.method == 'POST':
+        task.status = 'COMPLETED'
+        task.save()
+        messages.success(request, f'Task "{task.title}" marked as complete!')
+    
+    return redirect('my_tasks')
+
+
+@login_required
+def my_tasks_view(request):
+    """Employee view their assigned tasks"""
+    tasks = request.user.tasks.all().order_by('-created_at')
+    
+    context = {
+        'tasks': tasks,
+    }
+    
+    return render(request, 'employee/my_tasks.html', context)
+
+
+@login_required
+@admin_required
+def task_list_view(request):
+    """Admin view all tasks"""
+    tasks = Task.objects.all().select_related('assigned_to', 'created_by')
+    
+    context = {
+        'tasks': tasks,
+    }
+    
+    return render(request, 'admin/task_list.html', context)

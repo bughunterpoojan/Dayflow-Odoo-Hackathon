@@ -4,7 +4,7 @@ Django forms for the HRMS application.
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, EmployeeProfile, LeaveRequest, Attendance, Payroll
+from .models import CustomUser, EmployeeProfile, LeaveRequest, Attendance, Payroll, Task
 
 
 class AddUserForm(UserCreationForm):
@@ -105,3 +105,17 @@ class SalaryStructureForm(forms.Form):
                                    widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Allowances'}))
     deductions = forms.DecimalField(max_digits=10, decimal_places=2, required=False, initial=0,
                                    widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Deductions'}))
+
+
+class TaskForm(forms.ModelForm):
+    """Form for admin to create a task assigned to a single employee."""
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'assigned_to', 'start_date', 'end_date']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Task title'}),
+            'description': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4, 'placeholder': 'Task description'}),
+            'assigned_to': forms.Select(attrs={'class': 'form-select'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+        }
