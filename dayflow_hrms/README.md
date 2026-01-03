@@ -120,7 +120,3 @@ dayflow_hrms/
 - Apply migrations: `python manage.py migrate`
 - Create superuser: `python manage.py createsuperuser`
 
-
----
-
-© Dayflow HRMS
