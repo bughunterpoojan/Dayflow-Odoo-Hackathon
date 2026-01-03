@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="flex justify-between items-center mb-4">
+        <h1>My Profile</h1>
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+
+    <div class="grid grid-3">
+        <!-- Personal Information -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Personal Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture"
+                        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 0 auto;">
+                    {% else %}
+                    <div
+                        style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+                                    display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; margin: 0 auto;">
+                        {{ user.first_name.0 }}{{ user.last_name.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <p><strong>Employee ID:</strong> {{ user.employee_id }}</p>
+                <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>
+                <p><strong>Address:</strong> {{ profile.personal_details.address|default:"Not provided" }}</p>
+            </div>
+        </div>
+
+        <!-- Job Details -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Job Details</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Department:</strong> {{ profile.department }}</p>
+                <p><strong>Position:</strong> {{ profile.position }}</p>
+                <p><strong>Employment Type:</strong> {{ profile.employment_type }}</p>
+                <p><strong>Date Joined:</strong> {{ profile.date_joined|date:"M d, Y" }}</p>
+                <p><strong>Tenure:</strong> {{ profile.get_tenure }}</p>
+            </div>
+        </div>
+
+        <!-- Salary Structure -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Salary Structure</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Base Salary:</strong> ₹{{ profile.salary_structure.base_salary|default:"Not set" }}</p>
+                <p><strong>Allowances:</strong> ₹{{ profile.salary_structure.allowances|default:"0" }}</p>
+                <p><strong>Deductions:</strong> ₹{{ profile.salary_structure.deductions|default:"0" }}</p>
+                <hr>
+                <p><strong>Net Salary:</strong>
+                    {% if profile.salary_structure.base_salary %}
+                    ₹{{
+                    profile.salary_structure.base_salary|add:profile.salary_structure.allowances|add:profile.salary_structure.deductions|floatformat:2
+                    }}
+                    {% else %}
+                    Not calculated
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign up for Dayflow HRMS">
+    <title>Sign Up - Dayflow HRMS</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card fade-in">
+            <div class="auth-logo">
+                🌊 Dayflow HRMS
+            </div>
+
+            <h2 class="auth-title">Create Your Account</h2>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div
+                class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_employee_id" class="form-label">Employee ID</label>
+                    {{ form.employee_id }}
+                    {% if form.employee_id.errors %}
+                    <div class="form-error">{{ form.employee_id.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email" class="form-label">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <div class="form-error">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <div class="form-error">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password1" class="form-label">Password</label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                    <div class="form-error">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password2" class="form-label">Confirm Password</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                    <div class="form-error">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_role" class="form-label">Role</label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                    <div class="form-error">{{ form.role.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                    Create Account
+                </button>
+            </form>
+
+            <p class="text-center mt-3">
+                Already have an account? <a href="{% url 'login' %}">Sign In</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Payroll Management - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>Payroll Management</h1>
+    <p class="text-secondary mb-4">View and manage employee payroll</p>
+
+    <!-- Month/Year Filter and Generate -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="flex justify-between items-center">
+                <form method="GET" class="flex gap-2 items-center">
+                    <div>
+                        <label for="month" class="form-label">Month</label>
+                        <select name="month" id="month" class="form-select">
+                            {% for m in "123456789"|make_list %}{% if m %}
+                            <option value="{{ m }}" {% if month==m|add:"0" %}selected{% endif %}>{{ m }}</option>
+                            {% endif %}{% endfor %}
+                            <option value="10" {% if month==10 %}selected{% endif %}>10</option>
+                            <option value="11" {% if month==11 %}selected{% endif %}>11</option>
+                            <option value="12" {% if month==12 %}selected{% endif %}>12</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="year" class="form-label">Year</label>
+                        <input type="number" name="year" id="year" class="form-input" value="{{ year }}" min="2020"
+                            max="2030">
+                    </div>
+
+                    <div style="margin-top: 1.8rem;">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+
+                <form method="POST" action="{% url 'admin_generate_payroll' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="month" value="{{ month }}">
+                    <input type="hidden" name="year" value="{{ year }}">
+                    <button type="submit" class="btn btn-success">Generate Payroll for {{ month }}/{{ year }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payroll Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Payroll Records for {{ month }}/{{ year }}</h3>
+        </div>
+        <div class="card-body">
+            {% if payroll_records %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Employee ID</th>
+                        <th>Base Salary</th>
+                        <th>Allowances</th>
+                        <th>Deductions</th>
+                        <th>Net Salary</th>
+                        <th>Generated On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payroll in payroll_records %}
+                    <tr>
+                        <td>{{ payroll.employee.get_full_name }}</td>
+                        <td>{{ payroll.employee.employee_id }}</td>
+                        <td>₹{{ payroll.base_salary|floatformat:2 }}</td>
+                        <td class="text-success">+₹{{ payroll.allowances|floatformat:2 }}</td>
+                        <td class="text-error">-₹{{ payroll.deductions|floatformat:2 }}</td>
+                        <td><strong>₹{{ payroll.net_salary|floatformat:2 }}</strong></td>
+                        <td>{{ payroll.generated_date|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'admin_update_salary' payroll.employee.id %}"
+                                class="btn btn-sm btn-secondary">Update Salary</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-secondary">No payroll records found for {{ month }}/{{ year }}. Click "Generate Payroll" to
+                create records.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

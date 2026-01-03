@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for Leave - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>Apply for Leave</h1>
+    <p class="text-secondary mb-4">Submit a new leave request</p>
+
+    <div class="grid grid-2">
+        <!-- Application Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Leave Application</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="id_leave_type" class="form-label">Leave Type</label>
+                        {{ form.leave_type }}
+                        {% if form.leave_type.errors %}
+                        <div class="form-error">{{ form.leave_type.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_start_date" class="form-label">Start Date</label>
+                        {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                        <div class="form-error">{{ form.start_date.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_end_date" class="form-label">End Date</label>
+                        {{ form.end_date }}
+                        {% if form.end_date.errors %}
+                        <div class="form-error">{{ form.end_date.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_remarks" class="form-label">Reason for Leave</label>
+                        {{ form.remarks }}
+                        {% if form.remarks.errors %}
+                        <div class="form-error">{{ form.remarks.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                        <a href="{% url 'leave_history' %}" class="btn btn-secondary">View History</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Leave Information -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Leave Types</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h4 style="color: var(--success);">💚 Paid Leave</h4>
+                    <p class="text-secondary">Annual leave with full pay</p>
+                </div>
+
+                <div class="mb-3">
+                    <h4 style="color: var(--warning);">🏥 Sick Leave</h4>
+                    <p class="text-secondary">Medical leave with full pay (may require documentation)</p>
+                </div>
+
+                <div class="mb-3">
+                    <h4 style="color: var(--error);">📋 Unpaid Leave</h4>
+                    <p class="text-secondary">Leave without pay</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Note:</strong> Your leave request will be sent to HR for approval. You will be notified once
+                    it's processed.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

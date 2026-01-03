@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Salary Structure - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>Update Salary Structure</h1>
+    <p class="text-secondary mb-4">Update salary structure for {{ employee.get_full_name }}</p>
+
+    <div class="card" style="max-width: 600px;">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_base_salary" class="form-label">Base Salary (₹)</label>
+                    {{ form.base_salary }}
+                    {% if form.base_salary.errors %}
+                    <div class="form-error">{{ form.base_salary.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_allowances" class="form-label">Allowances (₹)</label>
+                    {{ form.allowances }}
+                    {% if form.allowances.errors %}
+                    <div class="form-error">{{ form.allowances.errors }}</div>
+                    {% endif %}
+                    <p class="text-secondary mt-1" style="font-size: 0.875rem;">Housing, transport, meal allowances,
+                        etc.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_deductions" class="form-label">Deductions (₹)</label>
+                    {{ form.deductions }}
+                    {% if form.deductions.errors %}
+                    <div class="form-error">{{ form.deductions.errors }}</div>
+                    {% endif %}
+                    <p class="text-secondary mt-1" style="font-size: 0.875rem;">Tax, insurance, provident fund, etc.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Net Salary:</strong> Base Salary + Allowances - Deductions
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-primary">Update Salary Structure</button>
+                    <a href="{% url 'view_employee_detail' employee.id %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

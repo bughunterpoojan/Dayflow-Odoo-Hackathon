@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Payroll - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>My Payroll</h1>
+    <p class="text-secondary mb-4">View your salary details</p>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Payroll History</h3>
+        </div>
+        <div class="card-body">
+            {% if payroll_records %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Month/Year</th>
+                        <th>Base Salary</th>
+                        <th>Allowances</th>
+                        <th>Deductions</th>
+                        <th>Net Salary</th>
+                        <th>Generated On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payroll in payroll_records %}
+                    <tr>
+                        <td><strong>{{ payroll.month }}/{{ payroll.year }}</strong></td>
+                        <td>₹{{ payroll.base_salary|floatformat:2 }}</td>
+                        <td class="text-success">+₹{{ payroll.allowances|floatformat:2 }}</td>
+                        <td class="text-error">-₹{{ payroll.deductions|floatformat:2 }}</td>
+                        <td><strong>₹{{ payroll.net_salary|floatformat:2 }}</strong></td>
+                        <td>{{ payroll.generated_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-secondary">No payroll records available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if payroll_records %}
+    <div class="alert alert-info mt-4">
+        <strong>Note:</strong> Payroll data is read-only. For any discrepancies, please contact your HR department.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

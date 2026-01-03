@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Approvals - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>Leave Requests</h1>
+    <p class="text-secondary mb-4">Review and manage leave requests</p>
+
+    <!-- Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="flex gap-2">
+                <a href="{% url 'admin_leave_list' %}"
+                    class="btn {% if status_filter == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    All Requests
+                </a>
+                <a href="{% url 'admin_leave_list' %}?status=pending"
+                    class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    Pending
+                </a>
+                <a href="{% url 'admin_leave_list' %}?status=approved"
+                    class="btn {% if status_filter == 'approved' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    Approved
+                </a>
+                <a href="{% url 'admin_leave_list' %}?status=rejected"
+                    class="btn {% if status_filter == 'rejected' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    Rejected
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Requests Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Leave Requests</h3>
+        </div>
+        <div class="card-body">
+            {% if leave_requests %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Duration</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leave_requests %}
+                    <tr>
+                        <td>{{ leave.employee.get_full_name }}</td>
+                        <td>
+                            <span
+                                class="badge badge-{% if leave.leave_type == 'PAID' %}success{% elif leave.leave_type == 'SICK' %}warning{% else %}error{% endif %}">
+                                {{ leave.get_leave_type_display }}
+                            </span>
+                        </td>
+                        <td>{{ leave.start_date|date:"M d, Y" }}</td>
+                        <td>{{ leave.end_date|date:"M d, Y" }}</td>
+                        <td>{{ leave.get_duration }} day{{ leave.get_duration|pluralize }}</td>
+                        <td>{{ leave.remarks|truncatewords:10 }}</td>
+                        <td>
+                            <span
+                                class="badge badge-{% if leave.status == 'APPROVED' %}success{% elif leave.status == 'REJECTED' %}error{% else %}warning{% endif %}">
+                                {{ leave.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if leave.status == 'PENDING' %}
+                            <div class="flex gap-1">
+                                <form method="POST" action="{% url 'approve_leave' leave.id %}"
+                                    style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success">✅ Approve</button>
+                                </form>
+                                <form method="POST" action="{% url 'reject_leave' leave.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">❌ Reject</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            --
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-secondary">No leave requests found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

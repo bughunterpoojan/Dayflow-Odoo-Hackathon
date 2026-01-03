@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Dayflow HRMS{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1>Admin Dashboard 👨‍💼</h1>
+    <p class="text-secondary mb-4">Manage your organization's HR operations</p>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-4 mb-4">
+        <div class="dashboard-card">
+            <div class="dashboard-card-icon">👥</div>
+            <div class="dashboard-card-value">{{ total_employees }}</div>
+            <div class="dashboard-card-label">Total Employees</div>
+        </div>
+
+        <div class="dashboard-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <div class="dashboard-card-icon">✅</div>
+            <div class="dashboard-card-value">{{ present_count }}</div>
+            <div class="dashboard-card-label">Present Today</div>
+        </div>
+
+        <div class="dashboard-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <div class="dashboard-card-icon">⏳</div>
+            <div class="dashboard-card-value">{{ pending_leaves }}</div>
+            <div class="dashboard-card-label">Pending Leave Requests</div>
+        </div>
+
+        <div class="dashboard-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+            <div class="dashboard-card-icon">📊</div>
+            <div class="dashboard-card-value">{{ total_employees }}</div>
+            <div class="dashboard-card-label">Active Users</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-3 mb-4">
+        <a href="{% url 'employee_list' %}" class="card card-glass" style="text-decoration: none;">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                <h3>Manage Employees</h3>
+                <p class="text-secondary">View and edit employee information</p>
+            </div>
+        </a>
+
+        <a href="{% url 'admin_attendance' %}" class="card card-glass" style="text-decoration: none;">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                <h3>Attendance Records</h3>
+                <p class="text-secondary">Track employee attendance</p>
+            </div>
+        </a>
+
+        <a href="{% url 'admin_leave_list' %}" class="card card-glass" style="text-decoration: none;">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏖️</div>
+                <h3>Leave Approvals</h3>
+                <p class="text-secondary">Review and approve leave requests</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Recent Leave Requests -->
+    <div class="card">
+        <div class="card-header flex justify-between items-center">
+            <h3 class="card-title">Recent Leave Requests</h3>
+            <a href="{% url 'admin_leave_list' %}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body">
+            {% if recent_leaves %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Applied On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in recent_leaves %}
+                    <tr>
+                        <td>{{ leave.employee.get_full_name }}</td>
+                        <td>
+                            <span
+                                class="badge badge-{% if leave.leave_type == 'PAID' %}success{% elif leave.leave_type == 'SICK' %}warning{% else %}error{% endif %}">
+                                {{ leave.get_leave_type_display }}
+                            </span>
+                        </td>
+                        <td>{{ leave.start_date|date:"M d" }} - {{ leave.end_date|date:"M d" }}</td>
+                        <td>
+                            <span
+                                class="badge badge-{% if leave.status == 'APPROVED' %}success{% elif leave.status == 'REJECTED' %}error{% else %}warning{% endif %}">
+                                {{ leave.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ leave.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if leave.status == 'PENDING' %}
+                            <a href="{% url 'admin_leave_list' %}" class="btn btn-sm btn-primary">Review</a>
+                            {% else %}
+                            --
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-secondary">No recent leave requests.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
